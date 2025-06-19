@@ -1,10 +1,10 @@
-langchain==0.1.14
-langchain-community==0.0.30
-langchain-core==0.1.41
+langchain==0.1.16
+langchain-community==0.0.33
+langchain-core==0.1.52
 langchain-huggingface==0.0.3
 chromadb==0.4.24
-pypdf==5.6.0
 huggingface-hub==0.23.2
+pypdf==5.6.0
 python-dotenv
 fastapi
 uvicorn
