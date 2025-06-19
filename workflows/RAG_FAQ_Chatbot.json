@@ -1,0 +1,135 @@
+{
+  "name": "RAG FAQ Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/ask",
+        "responseMode": "=onReceived",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "abb15370-0154-4f05-a58a-53f65c71a2d1",
+      "name": "Webhook",
+      "webhookId": "2b45523e-10ec-4d2e-90ea-94abfe695aac"
+    },
+    {
+      "parameters": {
+        "command": "=python ./scripts/query_chroma.py \"{{$json.body.query}}\"\n"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "ef5eed11-cfc5-4970-ac98-b0178b26f60d",
+      "name": "Run Query Script"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistralai/mistral-7b-instruct\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a helpful assistant. Use only the context provided below to answer the question accurately.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Context:\\n{{ $json.stdout }}\\n\\nUser Query: {{ $json.body.query }}\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "d8d1e901-e304-4671-b242-87ec6b3f4d5b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4708426a-0573-4fc2-8c39-0069a7c3f6a9",
+              "name": "final_answer",
+              "value": "={{$json.choices[0].message.content}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        660,
+        0
+      ],
+      "id": "64017926-ef3f-4f52-8a73-e306a0ddc012",
+      "name": "Format Final Answer"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Run Query Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Query Script": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Format Final Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8f600d13-66d0-43cf-bdf5-62fb72f4effa",
+  "meta": {
+    "instanceId": "ce2d08583b8e851252b80e2c1d335b5e4c942d836f54ac316c0ac9141492f1b9"
+  },
+  "id": "NsMo4lje4aQK3r7H",
+  "tags": []
+}

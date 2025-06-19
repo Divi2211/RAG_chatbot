@@ -1,0 +1,10 @@
+[
+  {
+    "query": "What is Retrieval-Augmented Generation?",
+    "expected_keywords": ["retrieval", "generation", "context"]
+  },
+  {
+    "query": "What is Altibbe Health?",
+    "expected_keywords": ["AI", "health", "solutions"]
+  }
+]
