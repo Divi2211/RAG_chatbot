@@ -1,5 +1,5 @@
 langchain==0.1.14
-langchain-community==0.0.28
+langchain-community==0.0.30
 langchain-core==0.1.41
 langchain-huggingface==0.0.3
 chromadb==0.4.24
